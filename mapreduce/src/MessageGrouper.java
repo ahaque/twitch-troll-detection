@@ -1,4 +1,3 @@
-package mapreduce;
 
 /**
  * MapReduce program for parsing XML-like data from an IRC chatroom
