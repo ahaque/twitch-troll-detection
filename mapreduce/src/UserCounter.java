@@ -18,36 +18,34 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class MessageGrouper {
+public class UserCounter {
 
-	public static class Map extends Mapper<LongWritable, Text, Text, Text> {
+	public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
+		
+		private static final IntWritable ONE = new IntWritable(1);
 		
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			String line = value.toString();
-			// Extract the username
-			int usernameStartIndex = line.indexOf("<user>")+6;
-			int usernameEndIndex = line.indexOf("</user>");
-			// Key is username, message is value
-			context.write(new Text(line.substring(usernameStartIndex, usernameEndIndex)), new Text(value.toString()));
+			context.write(new Text(line.substring(line.indexOf("<user>")+6, line.indexOf("</user>"))), ONE);
 		}
 		
 	}
 
-	public static class Reduce extends Reducer<Text, Text, Text, Text> {
+	public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
 
-		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-			StringBuilder builder = new StringBuilder();
-			for (Text t : values) {
-				builder.append(t+"\n");
+		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+			int sum = 0;
+			for (IntWritable iw : values) {
+				sum += iw.get();
 			}
-			context.write(key, new Text(builder.toString()));
+			context.write(key, new IntWritable(sum));
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		@SuppressWarnings("deprecation")
-		Job job = new Job(conf, "MessageGrouper");
+		Job job = new Job(conf, "UserCounter");
 
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
