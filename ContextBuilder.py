@@ -1,7 +1,7 @@
 # Author: Albert Haque
 # Date: April 2014
 
-class Feature:
+class Context:
     def __init__(self):
         pass
 
