@@ -22,8 +22,8 @@ for line in lines:
 		username = parts[2].replace("<DELIMIT>","").replace(":","")
 		message = line[line.find("<DELIMIT>")+10:].rstrip("\n")
 		output_file.write("<date>" + date + "</date><time>" + time + "</time><user>" + username + "</user><msg>" + message + "</msg>\n")
-		# If this line is a true, untouched line in the format:
-		# YYYY-MM-DD HH:MM(:SS(:ms)) <USERNAME> message-till-end-of-line
+	# If this line is a true, untouched line in the format:
+	# YYYY-MM-DD HH:MM(:SS(:ms)) <USERNAME> message-till-end-of-line
     else:
 			parts = line.split()
 			date = parts[0]
@@ -32,6 +32,5 @@ for line in lines:
 				username = parts[2][1:-1]
 				message = line[line.find(">")+2:].rstrip("\n")
 				output_file.write("<date>" + date + "</date><time>" + time + "</time><user>" + username + "</user><msg>" + message + "</msg>\n")
-
 input_file.close()
 output_file.close()
