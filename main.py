@@ -21,11 +21,8 @@ def main():
         sys.exit(0)
 
     input_file = open(sys.argv[1], "r")
+    # Load into memory
     lines = input_file.readlines()
-    count = 0
-    for line in lines:
-        count += 1
-    print count
 
 if  __name__ =='__main__':
     main()
