@@ -1,10 +1,9 @@
 '''
-Created on Apr 26, 2014
-
 @author: Albert Haque
+@date: April 2014
 '''
 
-class MyClass(object):
+class Context(object):
     '''
     classdocs
     '''
