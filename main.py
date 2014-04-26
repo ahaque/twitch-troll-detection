@@ -4,6 +4,7 @@
 
 import sys
 import os
+import numpy as np
 
 class Context:
     def __init__(self):
