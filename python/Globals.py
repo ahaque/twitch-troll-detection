@@ -5,4 +5,4 @@ Global variables for Machine Learns Twitch
 '''
 
 # In seconds, the duration of a context
-CONTEXT_DURATION = 1
+CONTEXT_DURATION = 60

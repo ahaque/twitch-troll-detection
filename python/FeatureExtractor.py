@@ -13,7 +13,7 @@ from pprint import pprint
 import Globals
 
 from Context import Context
-
+from Enumerations import Button
 
 def main():
     fe = FeatureExtractor()
@@ -21,12 +21,15 @@ def main():
 
 class FeatureExtractor():
     context_history = None
+    output_file = None
     
     def __init__(self):
         self.context_history = []
+        self.output_file = open("frequencies.csv", "w")
     
     def readInputFile(self):
         input_file = open(sys.argv[1], "r")
+        
         lines = input_file.readlines()
         
         num_lines_parsed = 0
@@ -36,6 +39,9 @@ class FeatureExtractor():
         for line in lines:
             
             line_timestamp = self.extractTimestamp(line)
+            # Handles malformed timestamps
+            if line_timestamp is None:
+                continue
             # Extract other components of message
             line_message = line[line.find("<msg>")+5:line.find("</msg>")]
             line_username = line[line.find("<user>")+6:line.find("</user>")]
@@ -44,9 +50,10 @@ class FeatureExtractor():
             if line_timestamp - current_context.timestamp > timedelta(seconds=Globals.CONTEXT_DURATION-1):
                 if printStats == True:
                     print("------------------------- Messages Parsed: " + str(num_lines_parsed) + "-------------------------")
-                    print(str(current_context.timestamp) + " | Message/sec=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
+                    print("Context: " + str(current_context.timestamp) + " | Message/sec=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
                     pprint(current_context.getButtonFrequencies())
                     printStats = False
+                self.writeContextToFile(current_context)
                 self.context_history.append(current_context)
                 current_context = Context(line_timestamp)
             # Else, we're in the same second, so update the current context
@@ -61,6 +68,17 @@ class FeatureExtractor():
 
         # Add the latest context
         self.context_history.append(current_context)
+        self.writeContextToFile(current_context)
+        self.output_file.close()
+    
+    def writeContextToFile(self, context):
+        # timestamp, buttons,..., total_msg, percent spam
+        self.output_file.write(str(context.timestamp)+",")
+        freq = context.getButtonFrequencies()
+        for button in Button:
+            self.output_file.write(str(freq[button]) + ",")
+        self.output_file.write(str(context.total_messages) + "," + str(context.getSpamFrequency()) +"\n")
+        
     '''
     Input: XML line from dataset
     Output: DateTime timestamp of message  
@@ -103,7 +121,7 @@ class FeatureExtractor():
             timestamp = datetime(int(year), int(month), int(day), int(hour), int(minute), int(seconds))
         # If malformed input, just throw out the data point
         except ValueError:
-            pass
+            return None
         
         return timestamp
     
