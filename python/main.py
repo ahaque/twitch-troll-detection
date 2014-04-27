@@ -6,46 +6,71 @@ Twitch Plays Pokemon, Machine Learns Twitch
 
 import sys
 import os
+import datetime
 
-from Enumerations import Button, Mode, Label
+import Globals
+
 
 def main():
-    print(Button.down)
+    readInputFile()
 
-def calculateMessagesPerDay():
-    # Input error handling
-    usage_message = "   USAGE: python main.py <dataset file>"  
-    if len(sys.argv) != 2:
-        print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
-        print(usage_message)
-        sys.exit(0)
-    if os.path.isfile(sys.argv[1]) is False:
-        print("   ERROR: The input file \"" + sys.argv[1] + "\" does not exist.")
-        print(usage_message)
-        sys.exit(0)
-
+def readInputFile():
     input_file = open(sys.argv[1], "r")
-    date_frequency = dict()
-
     lines = input_file.readlines()
     count = 0
+    # Create a message object for each message
     for line in lines:
         date_raw = line[line.find("<date>") + 6:line.find("</date>")]
-        # Convert 1 digit numbers to 2 digits
         year = date_raw[0:4]
         month = padMonth(date_raw)
         day = padDay(date_raw)
-        formatted_date = year + "-" + month + "-" + day
         
-        if formatted_date in date_frequency:
-            date_frequency[formatted_date] += 1
-        else:
-            date_frequency[formatted_date] = 1
-        count += 1
+        time_raw = line[line.find("<time>") + 6:line.find("</time>")]
+        first_colon = find_nth(time_raw,":",1)
+        second_colon = find_nth(time_raw,":",2)
+        third_colon = find_nth(time_raw,":",3)
     
-    for key in date_frequency.keys():
-        print(key + "\t" + str(date_frequency[key]))
-    print("Total Messages: " + str(count))
+        hour = time_raw[0:first_colon]
+        minute = None
+        seconds = None
+        microseconds = None
+        # Some data points are missing seconds
+        if second_colon > 0:
+            minute = time_raw[first_colon+1:second_colon]
+            if third_colon > 0:
+                seconds = time_raw[second_colon+1:third_colon]
+            else:
+                seconds = time_raw[second_colon+1:]
+        else:
+            minute = time_raw[first_colon+1:]
+            seconds = "0"
+        # Some data points are missing microseconds
+        if third_colon > 0:
+            microseconds = time_raw[third_colon+1:]
+        else:
+            microseconds = "0"
+        count += 1
+                    
+        # Create the DateTime object
+        try:
+            timestamp = datetime.datetime(int(year),int(month),int(day),int(hour),int(minute),int(seconds),int(microseconds))
+        # If malformed input, just throw out the data point
+        except ValueError:
+            continue
+        
+        if count % 500000 == 0:
+            print(str(count) + "\t|" + str(timestamp))
+        
+        # Extract other components of message
+        
+        # Create new Message object, add it to global all_messages
+
+def find_nth(haystack, needle, n):
+    start = haystack.find(needle)
+    while start >= 0 and n > 1:
+        start = haystack.find(needle, start+len(needle))
+        n -= 1
+    return start
 
 def padMonth(date_raw):
     first_dash = 5
@@ -66,4 +91,14 @@ def padDay(date_raw):
         return day
 
 if __name__ == '__main__':
+    # Input parameter validation
+    usage_message = "   USAGE: python main.py <dataset file>"  
+    if len(sys.argv) != 2:
+        print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
+        print(usage_message)
+        sys.exit(0)
+    if os.path.isfile(sys.argv[1]) is False:
+        print("   ERROR: The input file \"" + sys.argv[1] + "\" does not exist.")
+        print(usage_message)
+        sys.exit(0)
     main()

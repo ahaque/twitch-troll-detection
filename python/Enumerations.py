@@ -1,14 +1,17 @@
 '''
-Created on Apr 26, 2014
+@author: Albert Haque
+@date: April 2014
 
-@author: Albert
+Each of the following classes are enumerations used in our algorithm.
 '''
 
-class Button:
+from enum import Enum
+
+class Button(Enum):
     up, down, left, right, a, b, start, select = range(8)
     
-class Mode:
+class Mode(Enum):
     anarchy, democracy = range(2)
     
-class Label:
+class Label(Enum):
     troll, non_troll = range(2)

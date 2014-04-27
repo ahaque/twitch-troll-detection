@@ -8,7 +8,7 @@ That is, how important is this goal compared to other concurrent goals.
 
 from Enumerations import Button
 
-class Goal(object):
+class Goal:
     # Must be of type Button
     button = None
     # Must be between 0 and 1
