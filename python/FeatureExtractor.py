@@ -6,48 +6,54 @@ Twitch Plays Pokemon, Machine Learns Twitch
 
 import sys
 import os
-import datetime
 
+from datetime import datetime, timedelta
 from pprint import pprint
-from Enumerations import Button
+
+from Context import Context
+
 
 def main():
     fe = FeatureExtractor()
-    #fe.readInputFile()
-    fe.setupTrailingRecords()
-    pprint(fe.trailing_inputs)
+    fe.readInputFile()
 
 class FeatureExtractor():
-    trailing_inputs = None
-    trailing_total_messages = None
-    trailing_spam = None
+    context_history = None
     
-    def setupTrailingRecords(self):
-        self.trailing_inputs = dict()
-        for button in Button:
-            self.trailing_inputs[button] = []
-            
-        self.trailing_total_messages =  []
-        self.trailing_spam = []
+    def __init__(self):
+        self.context_history = []
     
     def readInputFile(self):
         input_file = open(sys.argv[1], "r")
         lines = input_file.readlines()
         
         num_lines_parsed = 0
-        # Create a message object for each message
+        # Set up the first context
+        current_context = Context(self.extractTimestamp(lines[0]))
         for line in lines:
             
-            timestamp = self.extractTimestamp(line)
+            line_timestamp = self.extractTimestamp(line)
             # Extract other components of message
-            message = line[line.find("<msg>")+5:line.find("</msg>")]
-            username = line[line.find("<user>")+6:line.find("</user>")]
+            line_message = line[line.find("<msg>")+5:line.find("</msg>")]
+            line_username = line[line.find("<user>")+6:line.find("</user>")]
+                        
+            # If we hit a new second, that is the two timestamps differ by more than 1 second
+            if line_timestamp - current_context.timestamp > timedelta(seconds=1):
+                print("DateTime: " + str(current_context.timestamp) + " | Total Msg=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
+                pprint(current_context.getButtonFrequencies())
+                self.context_history.append(current_context)
+                current_context = Context(line_timestamp)
+            # Else, we're in the same second, so update the current context
+            else:
+                current_context.addMessageToContext(line_message)
+
             
             num_lines_parsed += 1
             if num_lines_parsed % 500000 == 0:
                 print("Finished: " + str(num_lines_parsed))
 
-    
+        # Add the latest context
+        self.context_history.append(current_context)
     '''
     Input: XML line from dataset
     Output: DateTime timestamp of message  
@@ -86,10 +92,11 @@ class FeatureExtractor():
                     
         # Create the DateTime object
         try:
-            timestamp = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(seconds), int(microseconds))
+            #timestamp = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(seconds), int(microseconds))
+            timestamp = datetime(int(year), int(month), int(day), int(hour), int(minute), int(seconds))
         # If malformed input, just throw out the data point
         except ValueError:
-            continue
+            pass
         
         return timestamp
     
