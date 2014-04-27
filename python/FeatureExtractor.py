@@ -13,9 +13,16 @@ from pprint import pprint
 import Globals
 
 from Context import Context
-from Enumerations import Button
+from Enumerations import Button, Mode
 
 def main():
+    print("Frequencies file column order")
+    for button in Button:
+        print(button)
+    for mode in Mode:
+        print(mode)
+    print("total msg")
+    print("spam freq")
     fe = FeatureExtractor()
     fe.readInputFile()
 
@@ -25,15 +32,13 @@ class FeatureExtractor():
     
     def __init__(self):
         self.context_history = []
-        self.output_file = open("frequencies.csv", "w")
+        self.output_file = open(sys.argv[2], "w")
     
     def readInputFile(self):
         input_file = open(sys.argv[1], "r")
-        
         lines = input_file.readlines()
         
         num_lines_parsed = 0
-        printStats = False
         # Set up the first context
         current_context = Context(self.extractTimestamp(lines[0]))
         for line in lines:
@@ -46,13 +51,8 @@ class FeatureExtractor():
             line_message = line[line.find("<msg>")+5:line.find("</msg>")]
             line_username = line[line.find("<user>")+6:line.find("</user>")]
                         
-            # If we hit a new second, that is the two timestamps differ by more than 1 second
+            # If we hit a new second, that is the two timestamps differ by more than the context duration
             if line_timestamp - current_context.timestamp > timedelta(seconds=Globals.CONTEXT_DURATION-1):
-                if printStats == True:
-                    print("------------------------- Messages Parsed: " + str(num_lines_parsed) + "-------------------------")
-                    print("Context: " + str(current_context.timestamp) + " | Message/sec=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
-                    pprint(current_context.getButtonFrequencies())
-                    printStats = False
                 self.writeContextToFile(current_context)
                 self.context_history.append(current_context)
                 current_context = Context(line_timestamp)
@@ -63,8 +63,7 @@ class FeatureExtractor():
             
             num_lines_parsed += 1
             if num_lines_parsed % 1000000 == 0:
-                #print("Finished: " + str(num_lines_parsed))
-                printStats = True
+                print("Finished: " + str(num_lines_parsed))
 
         # Add the latest context
         self.context_history.append(current_context)
@@ -74,9 +73,12 @@ class FeatureExtractor():
     def writeContextToFile(self, context):
         # timestamp, buttons,..., total_msg, percent spam
         self.output_file.write(str(context.timestamp)+",")
-        freq = context.getButtonFrequencies()
+        button_freq = context.getButtonFrequencies()
+        mode_freq = context.getModeFrequencies()
         for button in Button:
-            self.output_file.write(str(freq[button]) + ",")
+            self.output_file.write(str(button_freq[button]) + ",")
+        for mode in Mode:
+            self.output_file.write(str(mode_freq[mode]) + ",")
         self.output_file.write(str(context.total_messages) + "," + str(context.getSpamFrequency()) +"\n")
         
     '''
@@ -164,8 +166,8 @@ class FeatureExtractor():
 
 if __name__ == '__main__':
     # Input parameter validation
-    usage_message = "   USAGE: python main.py <dataset file>"  
-    if len(sys.argv) != 2:
+    usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <output csv frequency file>"  
+    if len(sys.argv) != 3:
         print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
         print(usage_message)
         sys.exit(0)

@@ -4,7 +4,7 @@ Twitch Plays Pokemon, Machine Learns Twitch
 @date: April 2014
 '''
 
-from Enumerations import Button
+from Enumerations import Button, Mode
 
 class Context:
     # All eight buttons
@@ -15,6 +15,8 @@ class Context:
     number_spam = 0
     # Timestamp at second resolution
     timestamp = None
+    # Counts of both modes
+    mode_counts = None
     # Anarchy or democracy
     current_mode = None
 
@@ -24,6 +26,23 @@ class Context:
         self.button_counts = dict()
         for button in Button:
             self.button_counts[button] = 0
+        # Instantiate the mode counter
+        self.mode_counts = dict()
+        for mode in Mode:
+            self.mode_counts[mode] = 0
+    
+    def getModeFrequencies(self):
+        frequencies = dict()
+        total_mode_inputs = sum(self.mode_counts.values())
+        
+        if total_mode_inputs == 0:
+            for mode in Mode:
+                frequencies[mode] = 0.0
+            return frequencies
+        
+        for mode in Mode:
+            frequencies[mode] = self.mode_counts[mode]/total_mode_inputs
+        return frequencies
             
     def getSpamFrequency(self):
         if self.total_messages == 0:
@@ -63,6 +82,10 @@ class Context:
             self.button_counts[Button.start] += 1
         elif msg == "select":
             self.button_counts[Button.select] += 1
+        elif msg == "anarchy":
+            self.mode_counts[Mode.anarchy] += 1
+        elif msg == "democracy":
+            self.mode_counts[Mode.democracy] += 1
         else:
             self.number_spam += 1
         self.total_messages += 1
