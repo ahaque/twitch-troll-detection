@@ -4,10 +4,6 @@
 Global variables for Machine Learns Twitch
 '''
 
-def init():
-    # Use the past TRAILING_WINDOW for profile/context calculations
-    global TRAILING_WINDOW
-    TRAILING_WINDOW = 30
-    
-    global all_messages
-    all_messages = []
+# Use the past TRAILING_WINDOW for profile/context calculations
+TRAILING_WINDOW = 30
+all_users = []
