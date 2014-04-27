@@ -4,6 +4,5 @@
 Global variables for Machine Learns Twitch
 '''
 
-# Use the past TRAILING_WINDOW for profile/context calculations
-TRAILING_WINDOW = 30
-all_users = []
+# In seconds, the duration of a context
+CONTEXT_DURATION = 1

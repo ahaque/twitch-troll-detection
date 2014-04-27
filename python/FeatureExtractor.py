@@ -10,6 +10,8 @@ import os
 from datetime import datetime, timedelta
 from pprint import pprint
 
+import Globals
+
 from Context import Context
 
 
@@ -28,6 +30,7 @@ class FeatureExtractor():
         lines = input_file.readlines()
         
         num_lines_parsed = 0
+        printStats = False
         # Set up the first context
         current_context = Context(self.extractTimestamp(lines[0]))
         for line in lines:
@@ -38,9 +41,12 @@ class FeatureExtractor():
             line_username = line[line.find("<user>")+6:line.find("</user>")]
                         
             # If we hit a new second, that is the two timestamps differ by more than 1 second
-            if line_timestamp - current_context.timestamp > timedelta(seconds=1):
-                print("DateTime: " + str(current_context.timestamp) + " | Total Msg=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
-                pprint(current_context.getButtonFrequencies())
+            if line_timestamp - current_context.timestamp > timedelta(seconds=Globals.CONTEXT_DURATION-1):
+                if printStats == True:
+                    print("------------------------- Messages Parsed: " + str(num_lines_parsed) + "-------------------------")
+                    print(str(current_context.timestamp) + " | Message/sec=" + str(current_context.total_messages) + " | SPAM %: " + str(current_context.getSpamFrequency()))
+                    pprint(current_context.getButtonFrequencies())
+                    printStats = False
                 self.context_history.append(current_context)
                 current_context = Context(line_timestamp)
             # Else, we're in the same second, so update the current context
@@ -49,8 +55,9 @@ class FeatureExtractor():
 
             
             num_lines_parsed += 1
-            if num_lines_parsed % 500000 == 0:
-                print("Finished: " + str(num_lines_parsed))
+            if num_lines_parsed % 1000000 == 0:
+                #print("Finished: " + str(num_lines_parsed))
+                printStats = True
 
         # Add the latest context
         self.context_history.append(current_context)

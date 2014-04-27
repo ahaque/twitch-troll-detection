@@ -26,13 +26,21 @@ class Context:
             self.button_counts[button] = 0
             
     def getSpamFrequency(self):
-        return self.number_spam/self.total_messages
+        if self.total_messages == 0:
+            return 0.0
+        else:
+            return self.number_spam/self.total_messages
     
     def getButtonFrequencies(self):
         frequencies = dict()
         # Get total button inputs
         total_button_inputs = sum(self.button_counts.values())
-        # Calculate percentages
+        # If no button inputs, return all zeros
+        if total_button_inputs == 0:
+            for button in Button:
+                frequencies[button] = 0.0
+            return frequencies
+        # Else, calculate percentages
         for button in Button:
             frequencies[button] = self.button_counts[button]/total_button_inputs
         return frequencies
