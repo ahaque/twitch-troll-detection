@@ -16,6 +16,7 @@ from Context import Context
 from Enumerations import Button, Mode
 
 def main():
+    '''
     print("Frequencies file column order")
     for button in Button:
         print(button)
@@ -23,8 +24,12 @@ def main():
         print(mode)
     print("total msg")
     print("spam freq")
+    '''
     fe = FeatureExtractor()
-    fe.readInputFile()
+    fe.readFrequencyFile()
+    fe.calculateFeatures()
+    #fe.calculateFrequenciesFromXML()
+    
 
 class FeatureExtractor():
     context_history = None
@@ -32,9 +37,33 @@ class FeatureExtractor():
     
     def __init__(self):
         self.context_history = []
-        self.output_file = open(sys.argv[2], "w")
+        #self.output_file = open(sys.argv[3], "w")
+        
+    def readFrequencyFile(self):
+        input_frequencies_file = open(sys.argv[2], "r")
+        
+        lines = input_frequencies_file.readlines()
+        count = 0
+        for line in lines:
+            row = line.split(",")
+            timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
+            c = Context(timestamp)
+            button_freq_list = []
+            mode_freq_list = []
+            for i in range(1,9):
+                button_freq_list.append(float(row[i]))
+            mode_freq_list.append(float(row[9]))
+            mode_freq_list.append(float(row[10]))
+
+            # button_freq_list, mode_freq, total_msg, spam
+            c.populateFromFile(button_freq_list, mode_freq_list, int(row[11]), float(row[12]))
+            self.context_history.append(c)
+            
+            count += 1
+            if count % 10000 == 0:
+                print("Finished Reading Frequency: " + str(count))
     
-    def readInputFile(self):
+    def calculateFrequenciesFromXML(self):
         input_file = open(sys.argv[1], "r")
         lines = input_file.readlines()
         
@@ -167,12 +196,16 @@ class FeatureExtractor():
 if __name__ == '__main__':
     # Input parameter validation
     usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <input frequencies file> <output feature file>"  
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
         print(usage_message)
         sys.exit(0)
     if os.path.isfile(sys.argv[1]) is False:
         print("   ERROR: The input file \"" + sys.argv[1] + "\" does not exist.")
+        print(usage_message)
+        sys.exit(0)
+    if os.path.isfile(sys.argv[2]) is False:
+        print("   ERROR: The input file \"" + sys.argv[2] + "\" does not exist.")
         print(usage_message)
         sys.exit(0)
     main()

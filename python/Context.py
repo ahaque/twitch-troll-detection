@@ -19,6 +19,9 @@ class Context:
     mode_counts = None
     # Anarchy or democracy
     current_mode = None
+    button_frequencies = None
+    mode_frequencies = None
+    percent_spam = None
 
     def __init__(self, timestamp):
         self.timestamp = timestamp
@@ -30,7 +33,20 @@ class Context:
         self.mode_counts = dict()
         for mode in Mode:
             self.mode_counts[mode] = 0
-    
+            
+    def populateFromFile(self, button_freq_list, mode_freq, total_msg, spam):
+        self.button_frequencies = dict()
+        self.mode_frequencies = dict()
+        i = 0
+        for button in Button:
+            self.button_frequencies[button] = button_freq_list[i]
+            i += 1
+        self.mode_frequencies[Mode.anarchy] = mode_freq[0]
+        self.mode_frequencies[Mode.democracy] = mode_freq[1]
+        self.total_messages = total_msg
+        self.percent_spam = spam
+        
+            
     def getModeFrequencies(self):
         frequencies = dict()
         total_mode_inputs = sum(self.mode_counts.values())
