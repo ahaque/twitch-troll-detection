@@ -22,8 +22,10 @@ class User:
     feature6 = 0
     # Number of times voted anarchy
     feature7 = 0
-    # Number of messages that are least important goal
+    # Number of messages that are least 3,2,1 important goals
     feature8 = 0
+    feature9 = 0
+    feature10 = 0
     # Totals for different inputs
     total_mode = 0
     total_button = 0
@@ -48,10 +50,12 @@ class User:
         feature_vector.append(self.feature2 / self.total_button)
         feature_vector.append(self.feature3 / self.total_button)
         feature_vector.append(self.feature4 / total_messages)
-        feature_vector.append(self.feature5 / total_messages)
+        feature_vector.append(self.feature5 / self.total_button)
         feature_vector.append(self.feature6 / self.total_button)
         feature_vector.append(self.feature7 / self.total_mode)
         feature_vector.append(self.feature8 / self.total_button)
+        feature_vector.append(self.feature9 / self.total_button)
+        feature_vector.append(self.feature10 / self.total_button)
         return feature_vector
     
     def processMessage(self, context, message):
@@ -60,14 +64,19 @@ class User:
             self.total_button += 1
             if context.current_mode == Mode.anarchy:
                 self.feature5 += 1
-            if msg in context.getTopNGoals(3):
-                self.feature3 += 1
-            if msg in context.getTopNGoals(2):
-                self.feature2 += 1
+            # Figure out how important the user's input and how it contributes to the goal
             if msg in context.getTopNGoals(1):
                 self.feature1 += 1
-            if msg in context.getLastNGoals(1):
+            elif msg in context.getTopNGoals(2):
+                self.feature2 += 1
+            elif msg in context.getTopNGoals(3):
+                self.feature3 += 1
+            elif msg in context.getLastNGoals(1):
                 self.feature8 += 1
+            elif msg in context.getLastNGoals(2):
+                self.feature9 += 1
+            elif msg in context.getLastNGoals(3):
+                self.feature10 += 1
         elif msg == "start":
             self.total_button += 1
             self.feature6 += 1

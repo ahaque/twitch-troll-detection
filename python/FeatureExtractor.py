@@ -25,8 +25,8 @@ def main():
     '''
     fe = FeatureExtractor()
     fe.readFrequencyFile()
-    fe.calculateFeatures()
-    #fe.calculateFrequenciesFromXML()
+    fe.extractFeatures()
+
     fe.output_file.close()
     fe.output_user_file.close()
 
@@ -43,7 +43,7 @@ class FeatureExtractor():
         self.output_user_file = open(sys.argv[4], "w")
         self.context_dict = dict()
         
-    def calculateFeatures(self):
+    def extractFeatures(self):
         # Read lines
         input_xml_file = open(sys.argv[1])
         lines = input_xml_file.readlines()
@@ -57,9 +57,10 @@ class FeatureExtractor():
                 continue
             
             # Do we need to update the context?
-            if line_timestamp > self.context_history[context_index+1].timestamp:
-                current_context = self.context_history[context_index+1]
-                context_index += 1
+            if context_index+1 < len(self.context_history):
+                if line_timestamp > self.context_history[context_index+1].timestamp:
+                    current_context = self.context_history[context_index+1]
+                    context_index += 1
             # Extract other components of message
             line_message = line[line.find("<msg>")+5:line.find("</msg>")]
             line_username = line[line.find("<user>")+6:line.find("</user>")]
@@ -124,7 +125,6 @@ class FeatureExtractor():
                 continue
             # Extract other components of message
             line_message = line[line.find("<msg>")+5:line.find("</msg>")]
-            line_username = line[line.find("<user>")+6:line.find("</user>")]
                         
             # If we hit a new second, that is the two timestamps differ by more than the context duration
             if line_timestamp - current_context.timestamp > timedelta(seconds=Globals.CONTEXT_DURATION-1):
