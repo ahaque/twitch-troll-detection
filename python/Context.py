@@ -85,16 +85,34 @@ class Context:
             frequencies[button] = self.button_counts[button]/total_button_inputs
         return frequencies
     
+    def buttonToString(self, button):
+        if button == Button.a:
+            return "a"
+        elif button == Button.b:
+            return "b"
+        elif button == Button.up:
+            return "up"
+        elif button == Button.down:
+            return "down"
+        elif button == Button.left:
+            return "left"
+        elif button == Button.right:
+            return "right"
+        elif button == Button.start:
+            return "start"
+        elif button == Button.select:
+            return "select"
+    
     def getTopNGoals(self, n):
         top_n_goals = []
         for k, v in self.button_frequencies.most_common(3):
-            top_n_goals.append(k)
+            top_n_goals.append(self.buttonToString(k))
         return top_n_goals
     
     def getLastNGoals(self, n):
         last_n_goals = []
         for k, v in self.button_frequencies.most_common()[:-n-1:-1]:
-            last_n_goals.append(k)
+            last_n_goals.append(self.buttonToString(k))
         return last_n_goals
     
     def addMessageToContext(self, message):

@@ -27,17 +27,20 @@ def main():
     fe.readFrequencyFile()
     fe.calculateFeatures()
     #fe.calculateFrequenciesFromXML()
-    
+    fe.output_file.close()
+    fe.output_user_file.close()
 
 class FeatureExtractor():
     context_history = None
     context_dict = None
     output_file = None
+    output_user_file = None
     all_users = dict()
     
     def __init__(self):
         self.context_history = []
         self.output_file = open(sys.argv[3], "w")
+        self.output_user_file = open(sys.argv[4], "w")
         self.context_dict = dict()
         
     def calculateFeatures(self):
@@ -46,7 +49,7 @@ class FeatureExtractor():
         lines = input_xml_file.readlines()
         context_index = 0
         current_context = self.context_history[context_index]
-        
+        line_count = 0
         for line in lines:
             line_timestamp = self.extractTimestamp(line)
             # Handles malformed timestamps
@@ -57,7 +60,6 @@ class FeatureExtractor():
             if line_timestamp > self.context_history[context_index+1].timestamp:
                 current_context = self.context_history[context_index+1]
                 context_index += 1
-            print("Context: " + str(current_context.timestamp))
             # Extract other components of message
             line_message = line[line.find("<msg>")+5:line.find("</msg>")]
             line_username = line[line.find("<user>")+6:line.find("</user>")]
@@ -68,8 +70,22 @@ class FeatureExtractor():
                 self.all_users[line_username] = u
             else:
                 self.all_users[line_username].processMessage(current_context, line_message)
+                
+            line_count += 1
+            if line_count % 1000000 == 0:
+                print("Finished processing user messages: " + str(line_count))
         
-        
+        print("Number of unique users: " + str(len(self.all_users.keys())))
+        print("Writing feature vectors to file...")
+        for username in self.all_users.keys():
+            self.output_user_file.write(username + "\n")
+            fv = self.all_users[username].getFeatureVector()
+            for i in range(0,len(fv)-1):
+                self.output_file.write(str(fv[i]) + ",")
+            self.output_file.write(str(fv[len(fv)-1])+"\n")
+            
+        print("Done! Terminating.")
+            
     def readFrequencyFile(self):
         input_frequencies_file = open(sys.argv[2], "r")
         
@@ -225,8 +241,8 @@ class FeatureExtractor():
 
 if __name__ == '__main__':
     # Input parameter validation
-    usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <input frequencies file> <output feature file>"  
-    if len(sys.argv) != 4:
+    usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <input frequencies file> <output feature file> <output user list>"  
+    if len(sys.argv) != 5:
         print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
         print(usage_message)
         sys.exit(0)
