@@ -166,7 +166,7 @@ class FeatureExtractor():
 
 if __name__ == '__main__':
     # Input parameter validation
-    usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <output csv frequency file>"  
+    usage_message = "   USAGE: python3 FeatureExtractor.py <input xml file> <input frequencies file> <output feature file>"  
     if len(sys.argv) != 3:
         print("   ERROR: You must supply all program arguments. You entered: " + str(len(sys.argv) - 1) + " arguments.")
         print(usage_message)
