@@ -5,6 +5,7 @@ Twitch Plays Pokemon, Machine Learns Twitch
 '''
 
 from Enumerations import Button, Mode
+from collections import Counter
 
 class Context:
     # All eight buttons
@@ -19,7 +20,7 @@ class Context:
     mode_counts = None
     # Anarchy or democracy
     current_mode = None
-    button_frequencies = None
+    button_counts = None
     mode_frequencies = None
     percent_spam = None
 
@@ -35,17 +36,21 @@ class Context:
             self.mode_counts[mode] = 0
             
     def populateFromFile(self, button_freq_list, mode_freq, total_msg, spam):
-        self.button_frequencies = dict()
+        self.button_frequencies = Counter()
         self.mode_frequencies = dict()
         i = 0
         for button in Button:
-            self.button_frequencies[button] = button_freq_list[i]
+            self.button_frequencies[button] = int(button_freq_list[i]*100000)
             i += 1
         self.mode_frequencies[Mode.anarchy] = mode_freq[0]
         self.mode_frequencies[Mode.democracy] = mode_freq[1]
         self.total_messages = total_msg
         self.percent_spam = spam
-        
+        # Since we know the distribution, we can determine the mode
+        if self.mode_frequencies[Mode.anarchy] >= self.mode_frequencies[Mode.democracy]:
+            self.current_mode = Mode.anarchy
+        else:
+            self.current_mode = Mode.democracy
             
     def getModeFrequencies(self):
         frequencies = dict()
@@ -79,6 +84,18 @@ class Context:
         for button in Button:
             frequencies[button] = self.button_counts[button]/total_button_inputs
         return frequencies
+    
+    def getTopNGoals(self, n):
+        top_n_goals = []
+        for k, v in self.button_frequencies.most_common(3):
+            top_n_goals.append(k)
+        return top_n_goals
+    
+    def getLastNGoals(self, n):
+        last_n_goals = []
+        for k, v in self.button_frequencies.most_common()[:-n-1:-1]:
+            last_n_goals.append(k)
+        return last_n_goals
     
     def addMessageToContext(self, message):
         msg = message.lower()

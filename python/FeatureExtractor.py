@@ -6,12 +6,10 @@ Twitch Plays Pokemon, Machine Learns Twitch
 
 import sys
 import os
-
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import Globals
-
+from User import User
 from Context import Context
 from Enumerations import Button, Mode
 
@@ -33,11 +31,44 @@ def main():
 
 class FeatureExtractor():
     context_history = None
+    context_dict = None
     output_file = None
+    all_users = dict()
     
     def __init__(self):
         self.context_history = []
-        #self.output_file = open(sys.argv[3], "w")
+        self.output_file = open(sys.argv[3], "w")
+        self.context_dict = dict()
+        
+    def calculateFeatures(self):
+        # Read lines
+        input_xml_file = open(sys.argv[1])
+        lines = input_xml_file.readlines()
+        context_index = 0
+        current_context = self.context_history[context_index]
+        
+        for line in lines:
+            line_timestamp = self.extractTimestamp(line)
+            # Handles malformed timestamps
+            if line_timestamp is None:
+                continue
+            
+            # Do we need to update the context?
+            if line_timestamp > self.context_history[context_index+1].timestamp:
+                current_context = self.context_history[context_index+1]
+                context_index += 1
+            print("Context: " + str(current_context.timestamp))
+            # Extract other components of message
+            line_message = line[line.find("<msg>")+5:line.find("</msg>")]
+            line_username = line[line.find("<user>")+6:line.find("</user>")]
+            
+            if line_username not in self.all_users.keys():
+                u = User(line_username)
+                u.processMessage(current_context, line_message)
+                self.all_users[line_username] = u
+            else:
+                self.all_users[line_username].processMessage(current_context, line_message)
+        
         
     def readFrequencyFile(self):
         input_frequencies_file = open(sys.argv[2], "r")
@@ -55,13 +86,12 @@ class FeatureExtractor():
             mode_freq_list.append(float(row[9]))
             mode_freq_list.append(float(row[10]))
 
-            # button_freq_list, mode_freq, total_msg, spam
             c.populateFromFile(button_freq_list, mode_freq_list, int(row[11]), float(row[12]))
             self.context_history.append(c)
             
             count += 1
             if count % 10000 == 0:
-                print("Finished Reading Frequency: " + str(count))
+                print("Finished Reading Frequency: " + str(count) + " / 270000")
     
     def calculateFrequenciesFromXML(self):
         input_file = open(sys.argv[1], "r")
