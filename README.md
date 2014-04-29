@@ -3,7 +3,10 @@ twitch-troll-detection
 
 Unsupervised machine learning methods to detect and classify anomalies in streaming data. We apply this to the viral event, TwitchPlaysPokemon, and attempt to identify trolls in a live IRC chat.
 
-We use Java 7 and Python 3.4.0 in this repository.
+We use Java 7 and Python 3.4.0 in this repository. NumPy 1.8.1 and SciPy 1.8.1 were used in conjunction with Python 2.7.6.
+
+We made the dataset we collected publicly available:
+http://www.cs.utexas.edu/~ahaque/twitchplayspokemon.tar.gz (561 MB compressed, 3.4 GB uncompressed XML file)
 
 mapreduce
 --------
