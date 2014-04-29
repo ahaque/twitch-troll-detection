@@ -5,9 +5,9 @@ Unsupervised machine learning methods to detect and classify anomalies in stream
 
 We use Java 7 and Python 3.4.0 in this repository. NumPy 1.8.1 and SciPy 1.8.1 were used in conjunction with Python 2.7.6.
 
-We made the dataset we collected publicly available:
+We made the dataset we collected publicly available. It is 561 MB compressed and 3.4 GB as an uncompressed XML file:
 http://www.cs.utexas.edu/~ahaque/twitchplayspokemon.tar.gz
-(561 MB compressed, 3.4 GB uncompressed XML file)
+
 
 mapreduce
 --------
