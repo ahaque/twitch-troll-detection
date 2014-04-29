@@ -105,7 +105,7 @@ class Context:
     
     def getTopNGoals(self, n):
         top_n_goals = []
-        for k, v in self.button_frequencies.most_common(3):
+        for k, v in self.button_frequencies.most_common(n):
             top_n_goals.append(self.buttonToString(k))
         return top_n_goals
     
