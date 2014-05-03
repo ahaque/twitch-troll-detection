@@ -22,7 +22,7 @@ for i = 1:numUsers
         end % if
     end % j
     if mod(i, 500) == 0
-        fprintf('Finished: %i\n', i);
+        fprintf('Finished: %i / 9000\n', i);
         toc
     end
 end % i

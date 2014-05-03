@@ -1,6 +1,9 @@
+
 % Author: Albert Haque
 % Date: April 2014
 % Twitch Plays Pokemon, Machine Learns Twitch
+
+% This function performs sum of k nearest neighbors distance calculation
 
 function [ anomalyScores ] = SKNN( k, distanceMatrix)
 % Input: k = will compute sum up to kth nearest neighbor

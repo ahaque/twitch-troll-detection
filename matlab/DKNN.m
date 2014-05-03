@@ -1,6 +1,10 @@
+
 % Author: Albert Haque
 % Date: April 2014
 % Twitch Plays Pokemon, Machine Learns Twitch
+
+% This function performs calculates distance based on the distance to the k
+% nearest neighbor
 
 function [ anomalyScores ] = DKNN( k, distanceMatrix)
 % Input: k = kth nearest neighbor to compare to 
