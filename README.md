@@ -17,7 +17,18 @@ python
 --------
 This project is the bulk of the unsupervised algorithm. It contains all necessary classes: Context, Message, User, etc. To import this project into eclipse, you must have PyDev installed.
 
+matlab
+--------
+MATLAB code for clustering and distance calculations. This is compatible with Octave.
+
+
+Citations
+--------
 If you wish to cite this dataset or paper:
+
+Haque, A. Twitch Plays Pokemon, Machine Learns Twitch: Unsupervised Context-Aware Anomaly Detection for Identifying Trolls in Streaming Data. 2014.
+
+BibTeX
 ```
 @article{haque2014twitch,
   title={Twitch Plays Pokemon, Machine Learns Twitch: Unsupervised Context-Aware Anomaly Detection for Identifying Trolls in Streaming Data},
