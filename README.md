@@ -1,19 +1,24 @@
 Twitch Plays Pokemon, Machine Learns Twitch
 --------
-Last Updated: January 16, 2015
+Last Updated: February 4, 2015
 
 ## Abstract
 With the increasing importance of online communities, discussion forums, and customer reviews, Internet “trolls” have proliferated thereby making it difficult for information seekers to find relevant and correct information. In this paper, we consider the problem of detecting and identifying Internet trolls, almost all of which are human agents. Identifying a human agent among a human population presents significant challenges compared to detecting automated spam or computerized robots. To learn a troll’s behavior, we use contextual anomaly detection to profile each chat user. Using clustering and distance-based methods, we use contextual data such as the group’s current goal, the current time, and the username to classify each point as an anomaly. A user whose features significantly differ from the norm will be classified as a troll. We collected 38 million data points from the viral Internet fad, Twitch Plays Pokemon. Using clustering and distance-based methods, we develop heuristics for identifying trolls. Using MapReduce techniques for preprocessing and user profiling, we are able to classify trolls based on 10 features extracted from a user’s lifetime history.
 
 ## Overview
-Unsupervised machine learning methods to detect and classify anomalies in streaming data. We apply this to the viral event, TwitchPlaysPokemon, and attempt to identify trolls in a live IRC chat.
+Unsupervised machine learning methods to detect and classify anomalies in streaming data. We apply this to the viral event, TwitchPlaysPokemon, and attempt to identify trolls in a live IRC chat. 
 
 We use Java 7 and Python 3.4.0 in this repository. NumPy 1.8.1 and SciPy 1.8.1 were used in conjunction with Python 2.7.6.
 
-We made the dataset we collected publicly available. It is 561 MB compressed and 3.4 GB as an uncompressed XML-like file:
+
+### TPP Dataset 
+
+The dataset, titled the TwitchPlaysPokemon Dataset (TPP), contains 37.8 million IRC chat messages. It is 509 MiB as a compressed zip file and 3.35 GiB as an uncompressed plain-text XML-like file. It contains IRC chat log data for chats made between February 2, 2014 and April 23, 2014 (68 days). Each line denotes a single IRC chat message.
+
+Download link:
 http://albert.cm/dl/tpp_data.zip
 
-Here is how the data looks like:
+Small sample of the dataset:
 ```
 <date>2014-02-14</date><time>08:17:32</time><user>medicblue</user><msg>a</msg>
 <date>2014-02-14</date><time>08:17:32</time><user>murderousburger</user><msg>rare candy, RARE CANDY</msg>
