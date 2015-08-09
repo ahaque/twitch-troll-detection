@@ -1,6 +1,6 @@
 Twitch Plays Pokemon, Machine Learns Twitch
 --------
-Last Updated: February 4, 2015
+Last Updated: August 8, 2015
 
 ## Overview
 Unsupervised machine learning methods to detect and classify anomalies in streaming data. We apply this to the viral event, TwitchPlaysPokemon, and attempt to identify trolls in a live IRC chat. For more information about what Twitch Plays Pokmeon, please see the Wikipedia article: http://en.wikipedia.org/wiki/Twitch_Plays_Pok%C3%A9mon
