@@ -1,6 +1,6 @@
 Twitch Plays Pokemon, Machine Learns Twitch
 --------
-Last Updated: 13 February 2018
+Last Updated: 20 February 2018
 
 ## TPP Dataset
 
@@ -32,7 +32,7 @@ We use Java 7 and Python 3.4.0 in this repository. NumPy 1.8.1 and SciPy 1.8.1 w
 ## Abstract
 With the increasing importance of online communities, discussion forums, and customer reviews, Internet “trolls” have proliferated thereby making it difficult for information seekers to find relevant and correct information. In this paper, we consider the problem of detecting and identifying Internet trolls, almost all of which are human agents. Identifying a human agent among a human population presents significant challenges compared to detecting automated spam or computerized robots. To learn a troll’s behavior, we use contextual anomaly detection to profile each chat user. Using clustering and distance-based methods, we use contextual data such as the group’s current goal, the current time, and the username to classify each point as an anomaly. A user whose features significantly differ from the norm will be classified as a troll. We collected 38 million data points from the viral Internet fad, Twitch Plays Pokemon. Using clustering and distance-based methods, we develop heuristics for identifying trolls. Using MapReduce techniques for preprocessing and user profiling, we are able to classify trolls based on 10 features extracted from a user’s lifetime history.
 
-You can view the full technical paper here: http://www.albert.cm/dl/twitch_paper.pdf
+You can view the full technical paper here: [https://arxiv.org/abs/1902.06208](https://arxiv.org/abs/1902.06208)
 
 ## MapReduce
 The Hadoop 2.2.0 program parses XML-like input we collected from the Twitch Plays Pokemon IRC chat room and groups all messages by user. This will allow us to build a profile for each user who participated. Because the file is several gigabytes in size, running MapReduce may be faster on some systems than a sequential program.
