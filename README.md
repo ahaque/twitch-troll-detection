@@ -56,3 +56,7 @@ BibTeX
   year={2014}
 }
 ```
+
+## Contact
+
+For any questions, contact me via email (contact info on my website).
