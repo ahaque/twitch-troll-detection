@@ -1,13 +1,14 @@
 Twitch Plays Pokemon, Machine Learns Twitch
 --------
-Last Updated: 10 April 2019
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3932957.svg)](https://doi.org/10.5281/zenodo.3932957)
+
 
 ## TPP Dataset
 
 The dataset, titled the Twitch Plays Pokemon Dataset (TPP), contains 37.8 million IRC chat messages. It contains IRC chat log data for messages made between February 2, 2014 and April 23, 2014 (68 days). Each line denotes a single IRC chat message.
 
-Download link:
-[https://www.alberthaque.com/projects/tpp/tpp_data.zip](https://alberthaque.com/projects/tpp/tpp_data.zip) (509 MB compressed, 3.4 GB uncompressed)
+Download from: [https://zenodo.org/record/3932957](https://zenodo.org/record/3932957) (534 MB compressed, 3.4 GB uncompressed)
 
 Sample of the dataset:
 ```
@@ -53,6 +54,7 @@ BibTeX
 @article{haque2014twitch,
   title={Twitch Plays Pokemon, Machine Learns Twitch},
   author={Haque, Albert},
+  institution={University of Texas at Austin},
   year={2014}
 }
 ```
